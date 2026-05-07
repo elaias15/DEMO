@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Mayorista — B2B</title>
+<title>DOKIDOKI </title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -809,21 +809,23 @@
       <li id="nav-flash">
         <a href="#" onclick="navGuard('flash'); return false;">
           <span>Pedidos Flash</span>
-          <span class="locked-icon" id="lockFlash">🔒</span>
+          <span class="locked-icon" id="lockFlash"></span>
         </a>
       </li>
       <li id="nav-productos">
         <button onclick="navGuard('productos'); return false;" onmouseenter="this.parentElement.classList.add('open')" aria-haspopup="true">
           Productos <span class="arrow">▾</span>
-          <span class="locked-icon" id="lockProd">🔒</span>
+          <span class="locked-icon" id="lockProd"></span>
         </button>
         <div class="dropdown" id="prodDropdown" onmouseleave="document.getElementById('nav-productos').classList.remove('open')">
-          <a href="#" onclick="navGuardCategory('Electrónica'); return false;"><span class="cat-icon">⚡</span> Electrónica</a>
-          <a href="#" onclick="navGuardCategory('Hogar'); return false;"><span class="cat-icon">🏠</span> Hogar</a>
-          <a href="#" onclick="navGuardCategory('Ropa'); return false;"><span class="cat-icon">👕</span> Ropa</a>
-          <a href="#" onclick="navGuardCategory('Deportes'); return false;"><span class="cat-icon">⚽</span> Deportes</a>
+          <a href="#" onclick="navGuardCategory('POKEMON TCG'); return false;"></span> POKEMON TCG </a>
+          <a href="#" onclick="navGuardCategory('MAGIC THE GATHERING'); return false;"></span> MAGIC THE GATHERING </a>
+          <a href="#" onclick="navGuardCategory('ONE PIECE TCG'); return false;"></span> ONE PIECE TCG </a>
+          <a href="#" onclick="navGuardCategory('DIGIMON TCG'); return false;"></span> DIGIMON TCG </a>
+          <a href="#" onclick="navGuardCategory('SRAGON BALL TCG'); return false;"></span> DRAGON BALL TCG </a>
+          <a href="#" onclick="navGuardCategory('GUNDAM TCG'); return false;"></span> GUNDAM TCG </a>
           <div class="dropdown-divider"></div>
-          <a href="#" onclick="navGuard('productos'); return false;" style="font-weight:500; color:var(--navy);">📋 Ver todos los productos</a>
+          <a href="#" onclick="navGuard('productos'); return false;" style="font-weight:500; color:var(--navy);"> Ver todos los productos</a>
         </div>
       </li>
       <li id="nav-alta">
@@ -854,8 +856,8 @@
     <!-- Banner de Bienvenida -->
     <div class="hero">
       <div class="hero-tag">Portal Doki Doki</div>
-      <h1>¡Bienvenido a tu<br><em>Panel Mayorista</em></h1>
-      <p>Gestioná tus compras de forma eficiente. Accedé a nuestro catálogo actualizado y cargá tus pedidos antes de las fechas de cierre.</p>
+      <h1>¡Bienvenido aL <br><em>Portal Dokidoki</em></h1>
+      <p>Gestioná tus compras. Accedé a nuestro catálogo y cargá tus pedidos antes de las fechas de cierre.</p>
       <div class="hero-actions">
         <button class="btn-primary btn-accent" onclick="navGuard('productos')">Ver Productos →</button>
       </div>
@@ -866,14 +868,14 @@
       <div class="stat-card" style="grid-column: 1 / -1;">
         <div class="stat-label">Cierre más próximo</div>
         <div class="stat-val accent" id="proximo-cierre-display">4 días</div>
-        <div class="stat-sub">Cierre mensual — Categoría: <span id="categoria-cierre">Electrónica</span></div>
+        <div class="stat-sub">Fecha limite de pedido: <span id="categoria-cierre">Pokemon Tcg</span></div>
       </div>
     </div>
 
     <div class="notice-banner">
       <span class="ni">📢</span>
       <div>
-        <strong>Recordatorio importante:</strong> Revisá siempre la sección de <strong>Fechas Límite</strong> para no quedar fuera del período de entrega actual.
+        <strong>Recordatorio importante:</strong> Revisá siempre la sección de<strong>Fechas Límite de pedidos </strong> para no quedarte sin producto.
       </div>
     </div>
   </section>
@@ -881,7 +883,7 @@
   <!-- PEDIDOS FLASH -->
   <section class="section" id="s-flash">
     <div id="flash-locked" class="locked-section" style="display:none">
-      <div class="lock-icon">🔒</div>
+      <div class="lock-icon"></div>
       <h2>Acceso restringido</h2>
       <p>Debes solicitar alta para ver este contenido. Los Pedidos Flash están disponibles solo para clientes registrados.</p>
       <button class="btn-primary btn-accent" onclick="showSection('alta')">Solicitar Alta →</button>
@@ -889,7 +891,7 @@
     <div id="flash-content">
       <div class="flash-header">
         <h2 class="flash-title">Pedidos Flash</h2>
-        <span class="flash-badge">⚡ Productos disponibles</span>
+        <span class="flash-badge">Productos disponibles</span>
       </div>
       <table class="items-table" style="max-width:780px;margin:0 auto;">
         <thead>
@@ -898,7 +900,6 @@
             <th style="width:110px">Código</th>
             <th>Descripción</th>
             <th style="width:130px">Precio Unit.</th>
-            <th style="width:100px">Stock</th>
             <th style="width:120px"></th>
           </tr>
         </thead>
@@ -935,7 +936,7 @@
     <div class="alta-wrap">
       <div class="alta-header">
         <h2>Solicitar Alta de Cliente</h2>
-        <p>Completá el formulario para acceder al portal mayorista. Tu solicitud será evaluada en un plazo de 1 a 2 días hábiles.</p>
+        <p>Completá el formulario para acceder al portal mayorista. Tu solicitud será evaluada a la brevedad.</p>
       </div>
       <div class="alta-card">
         <div id="altaForm">
@@ -946,30 +947,11 @@
               <input type="text" id="altaEmpresa" placeholder="Empresa S.A." />
             </div>
             <div class="form-group">
-              <label>RUT / Tax ID *</label>
-              <input type="text" id="altaRut" placeholder="20-12345678-9" />
-            </div>
-            <div class="form-group">
-              <label>Rubro / Industria</label>
-              <select id="altaRubro">
-                <option value="">Seleccioná...</option>
-                <option>Comercio minorista</option>
-                <option>Distribuidor</option>
-                <option>Servicios</option>
-                <option>Otro</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Volumen estimado mensual</label>
-              <select id="altaVolumen">
-                <option value="">Seleccioná...</option>
-                <option>Menos de $500.000</option>
-                <option>$500.000 – $2.000.000</option>
-                <option>Más de $2.000.000</option>
-              </select>
+              <label> DNI *</label>
+              <input type="text" id="DNI" placeholder="12345678" />
             </div>
             <div class="form-group full">
-              <label>Dirección comercial</label>
+              <label>Dirección Comercial</label>
               <input type="text" placeholder="Av. Corrientes 1234, CABA" />
             </div>
           </div>
@@ -978,10 +960,6 @@
             <div class="form-group">
               <label>Nombre y apellido *</label>
               <input type="text" id="altaContacto" placeholder="Juan Pérez" />
-            </div>
-            <div class="form-group">
-              <label>Cargo</label>
-              <input type="text" placeholder="Gerente de compras" />
             </div>
             <div class="form-group">
               <label>Email de contacto *</label>
@@ -1004,7 +982,7 @@
         <div class="success-screen" id="altaSuccess">
           <div class="check">✓</div>
           <h3>¡Solicitud enviada!</h3>
-          <p>Recibimos tu solicitud correctamente. Nos contactaremos al email ingresado en un plazo de 1 a 2 días hábiles para confirmar tu acceso.</p>
+          <p>Recibimos tu solicitud correctamente. Nos contactaremos para confirmar tu acceso.</p>
           <button class="btn-primary" onclick="showSection('inicio')" style="margin-top:1.5rem">Volver al inicio</button>
         </div>
       </div>
@@ -1015,13 +993,10 @@
   <section class="section" id="s-fechas">
     <div class="fechas-header">
       <h2>Cierre de Pedidos</h2>
-      <p>Tiempo restante para el cierre de cada producto. Una vez vencido el plazo, el pedido se procesa en el siguiente período.</p>
     </div>
     <div id="fechas-countdown-list"></div>
     <div class="notice-banner" style="margin-top:1.5rem;">
-      <span class="ni">ℹ️</span>
-      <div>Los pedidos realizados después del cierre serán procesados en el <strong>siguiente período</strong>. Para urgencias, usá la sección <strong>Pedidos Flash</strong>.</div>
-    </div>
+      <span class="ni"></span>
   </section>
 
 </main>
@@ -1071,7 +1046,7 @@ function openLoginModal(fromSection) {
     // Mensaje contextual si viene de sección bloqueada
     const sub = document.getElementById('modalSub');
     if (fromSection) {
-      sub.innerHTML = '🔒 Esta sección es exclusiva para clientes registrados. Iniciá sesión para continuar.';
+      sub.innerHTML = 'Esta sección es exclusiva para clientes registrados. Iniciá sesión para continuar.';
       sub.style.color = 'var(--accent)';
     } else {
       sub.innerHTML = 'Accedé al portal mayorista con tu cuenta de empresa.';
@@ -1497,7 +1472,7 @@ renderFlashList();
 
     <!-- Logged-in view -->
     <div class="modal-user-panel" id="modalUserPanel">
-      <div class="modal-user-avatar">🏢</div>
+      <div class="modal-user-avatar"> </div>
       <div class="modal-user-name" id="modalUserName">Empresa ABC S.A.</div>
       <div class="modal-user-email" id="modalUserEmail">demo@empresa.com</div>
       <button class="btn-primary btn-accent" onclick="doLogout()" style="width:100%;justify-content:center;padding:0.7rem;font-size:14px;">
