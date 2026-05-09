@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Mayorista B2B</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --bg2: #13161d;
+  --bg3: #1a1e27;
+  --bg4: #21263200;
+  --panel: #181c25;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #00e5a0;
+  --accent2: #00b87d;
+  --accent-dim: rgba(0,229,160,0.12);
+  --accent-glow: rgba(0,229,160,0.25);
+  --blue: #4f8ef7;
+  --blue-dim: rgba(79,142,247,0.12);
+  --amber: #f0b429;
+  --amber-dim: rgba(240,180,41,0.12);
+  --red: #f25a5a;
+  --red-dim: rgba(242,90,90,0.12);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.12);
+  --text: #e8eaf0;
+  --text2: #8a92a6;
+  --text3: #4a5268;
+  --sidebar-w: 230px;
+  --topbar-h: 56px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   LOGIN SCREEN
+   ============================================================ */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.login-bg {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.login-bg::before {
+  content: '';
+  position: absolute; top: -200px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 65%);
+}
+.login-bg::after {
+  content: '';
+  position: absolute; bottom: -150px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(79,142,247,0.06) 0%, transparent 65%);
+}
+.login-card {
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 2.5rem 2.25rem;
+  width: 380px;
+  position: relative; z-index: 1;
+  animation: fadeUp 0.4s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.login-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 2rem;
+}
+.login-logo .ico {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--accent); display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #0d0f14;
+}
+.login-logo .brand { font-family: 'Syne', sans-serif; font-size: 17px; color: var(--text); }
+.login-logo .brand span { color: var(--accent); }
+.login-subtitle {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1.75rem;
+  display: flex; align-items: center; gap: 6px;
+}
+.login-subtitle::before {
+  content: ''; width: 18px; height: 1px; background: var(--accent); opacity: 0.5;
+}
+.lf-group { margin-bottom: 1rem; }
+.lf-group label {
+  display: block; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--text2); margin-bottom: 6px;
+}
+.lf-group input {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.7rem 1rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  color: var(--text); outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.lf-group input:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.login-error {
+  background: var(--red-dim); border: 1px solid rgba(242,90,90,0.3);
+  border-radius: 8px; padding: 0.6rem 1rem;
+  font-size: 12.5px; color: var(--red);
+  margin-bottom: 1rem; display: none;
+}
+.btn-login {
+  width: 100%; background: var(--accent); color: #0d0f14;
+  border: none; border-radius: 8px; padding: 0.75rem;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.04em;
+  transition: background 0.15s, transform 0.1s;
+  margin-top: 0.5rem;
+}
+.btn-login:hover { background: #00ffb3; transform: translateY(-1px); }
+.login-hint {
+  margin-top: 1.25rem; text-align: center;
+  font-size: 11.5px; color: var(--text3);
+}
+.login-hint code {
+  background: var(--bg3); padding: 2px 6px; border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace; color: var(--text2);
+}
+
+/* ============================================================
+   ADMIN LAYOUT
+   ============================================================ */
+#adminApp {
+  display: none;
+  height: 100vh; overflow: hidden;
+}
+#adminApp.visible { display: flex; }
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  height: 100vh; overflow-y: auto;
+  position: relative; z-index: 10;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .ico {
+  width: 30px; height: 30px; border-radius: 6px;
+  background: var(--accent); display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #0d0f14;
+}
+.sidebar-logo .name {
+  font-family: 'Syne', sans-serif; font-size: 14px; color: var(--text);
+}
+.sidebar-logo .name span { color: var(--accent); }
+.sidebar-role {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent);
+  background: var(--accent-dim); padding: 2px 8px; border-radius: 4px;
+  margin: 0.75rem 1.25rem; display: inline-block;
+}
+.nav-section-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+  padding: 0.75rem 1.25rem 0.35rem;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0.6rem 1.25rem;
+  font-size: 13px; color: var(--text2);
+  cursor: pointer; border-left: 2px solid transparent;
+  transition: all 0.15s; text-decoration: none;
+  border-radius: 0;
+  background: none; border-right: none; border-top: none; border-bottom: none;
+  width: 100%; font-family: 'Lato', sans-serif;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-item.active {
+  color: var(--accent); background: var(--accent-dim);
+  border-left-color: var(--accent);
+}
+.nav-item .ni { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: var(--red); color: white;
+  font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px;
+}
+.sidebar-footer {
+  margin-top: auto; padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.admin-user {
+  display: flex; align-items: center; gap: 10px;
+}
+.admin-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent-dim); border: 1px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--accent);
+  font-family: 'Syne', sans-serif; flex-shrink: 0;
+}
+.admin-info { flex: 1; min-width: 0; }
+.admin-info .aname { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-info .arole { font-size: 11px; color: var(--text3); }
+.logout-btn {
+  background: none; border: none; cursor: pointer; color: var(--text3);
+  font-size: 16px; padding: 4px; border-radius: 4px;
+  transition: color 0.15s;
+}
+.logout-btn:hover { color: var(--red); }
+
+/* Main area */
+.main-area {
+  flex: 1; display: flex; flex-direction: column;
+  min-width: 0; height: 100vh; overflow: hidden;
+}
+.topbar {
+  height: var(--topbar-h); flex-shrink: 0;
+  background: var(--panel); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 1.75rem;
+  gap: 1rem;
+}
+.topbar h1 {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; color: var(--text);
+  flex: 1;
+}
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.tb-btn {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 0.45rem 0.9rem;
+  font-family: 'Lato', sans-serif; font-size: 12.5px; color: var(--text2);
+  cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+}
+.tb-btn:hover { border-color: var(--border2); color: var(--text); }
+.tb-btn.accent { background: var(--accent); color: #0d0f14; font-weight: 700; border-color: var(--accent); }
+.tb-btn.accent:hover { background: #00ffb3; }
+.content {
+  flex: 1; overflow-y: auto; padding: 1.75rem;
+  background: var(--bg);
+}
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+.panel { display: none; }
+.panel.active { display: block; animation: fadeUp 0.2s ease; }
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem; margin-bottom: 1.5rem;
+}
+.kpi-card {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.25rem 1.5rem;
+  position: relative; overflow: hidden;
+}
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%; border-radius: 12px 0 0 12px;
+}
+.kpi-card.c-green::before { background: var(--accent); }
+.kpi-card.c-blue::before  { background: var(--blue); }
+.kpi-card.c-amber::before { background: var(--amber); }
+.kpi-card.c-red::before   { background: var(--red); }
+.kpi-card.c-purple::before{ background: var(--purple); }
+.kpi-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.4rem; }
+.kpi-val   { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.kpi-card.c-green .kpi-val { color: var(--accent); }
+.kpi-card.c-blue  .kpi-val { color: var(--blue); }
+.kpi-card.c-amber .kpi-val { color: var(--amber); }
+.kpi-card.c-red   .kpi-val { color: var(--red); }
+.kpi-card.c-purple.kpi-val { color: var(--purple); }
+.kpi-sub   { font-size: 11.5px; color: var(--text3); }
+.kpi-icon  { position: absolute; top: 1rem; right: 1rem; font-size: 22px; opacity: 0.15; }
+
+/* Cards / Tables */
+.card {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 1.25rem; overflow: hidden;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+}
+.card-header h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); }
+.card-body { padding: 1.25rem 1.5rem; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  text-align: left; font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text3); padding: 0 1rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2); vertical-align: middle;
+}
+.data-table tr:last-child td { border: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table td strong { color: var(--text); font-weight: 500; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em;
+  padding: 3px 9px; border-radius: 6px;
+}
+.badge-green  { background: rgba(0,229,160,0.12); color: #00e5a0; }
+.badge-amber  { background: var(--amber-dim); color: var(--amber); }
+.badge-red    { background: var(--red-dim); color: var(--red); }
+.badge-blue   { background: var(--blue-dim); color: var(--blue); }
+.badge-purple { background: var(--purple-dim); color: var(--purple); }
+.badge-gray   { background: rgba(255,255,255,0.06); color: var(--text3); }
+
+/* Action buttons */
+.action-btn {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px 10px; font-size: 11.5px; color: var(--text2);
+  cursor: pointer; font-family: 'Lato', sans-serif;
+  transition: all 0.15s; margin-right: 4px;
+}
+.action-btn:hover { border-color: var(--accent); color: var(--accent); }
+.action-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+/* Forms */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+.fg { display: flex; flex-direction: column; gap: 5px; }
+.fg label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text3); }
+.fg input, .fg select, .fg textarea {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 0.6rem 0.85rem;
+  font-family: 'Lato', sans-serif; font-size: 13px;
+  color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow);
+}
+.fg select option { background: var(--bg3); }
+.fg textarea { resize: vertical; min-height: 80px; }
+.form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 0.5rem; }
+
+/* Search bar */
+.search-bar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 1rem; flex-wrap: wrap;
+}
+.search-bar input {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 0.55rem 1rem;
+  font-family: 'Lato', sans-serif; font-size: 13px;
+  color: var(--text); outline: none; flex: 1; min-width: 200px;
+  transition: border-color 0.15s;
+}
+.search-bar input:focus { border-color: var(--accent); }
+.search-bar select {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 0.55rem 0.85rem;
+  font-family: 'Lato', sans-serif; font-size: 13px; color: var(--text2);
+  outline: none; cursor: pointer;
+}
+
+/* Progress bar */
+.prog-track { background: var(--bg3); border-radius: 4px; height: 5px; }
+.prog-fill  { height: 5px; border-radius: 4px; background: var(--accent); }
+
+/* Charts simple */
+.mini-chart { display: flex; align-items: flex-end; gap: 4px; height: 60px; }
+.bar-col { flex: 1; background: var(--accent-dim); border-radius: 3px 3px 0 0;
+  transition: background 0.15s; cursor: pointer; position: relative; min-width: 10px; }
+.bar-col:hover { background: var(--accent); }
+.bar-col .tip {
+  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 4px; padding: 2px 6px; font-size: 10px; color: var(--accent);
+  white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s;
+  font-family: 'JetBrains Mono', monospace; margin-bottom: 3px;
+}
+.bar-col:hover .tip { opacity: 1; }
+.chart-labels { display: flex; gap: 4px; margin-top: 4px; }
+.chart-labels span { flex: 1; text-align: center; font-size: 9px; color: var(--text3); min-width: 10px; }
+
+/* Two-col layout */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+
+/* Toggle */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+.toggle-row:last-child { border: none; }
+.toggle-row .tl { font-size: 13px; color: var(--text); }
+.toggle-row .ts { font-size: 11.5px; color: var(--text3); margin-top: 2px; }
+.switch { width: 38px; height: 21px; background: var(--bg3); border-radius: 21px;
+  position: relative; cursor: pointer; border: 1px solid var(--border); flex-shrink: 0;
+  transition: background 0.2s; }
+.switch.on { background: var(--accent); border-color: var(--accent); }
+.switch::after { content: ''; position: absolute; top: 2px; left: 2px;
+  width: 15px; height: 15px; background: var(--text2); border-radius: 50%; transition: left 0.2s, background 0.2s; }
+.switch.on::after { left: 19px; background: #0d0f14; }
+
+/* Timeline / activity */
+.activity-item { display: flex; gap: 12px; padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+.activity-item:last-child { border: none; }
+.act-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.act-dot.green  { background: var(--accent); }
+.act-dot.blue   { background: var(--blue); }
+.act-dot.amber  { background: var(--amber); }
+.act-dot.red    { background: var(--red); }
+.act-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.act-text strong { color: var(--text); font-weight: 500; }
+.act-time { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+
+/* Alert banner */
+.alert-banner {
+  border-radius: 8px; padding: 0.75rem 1rem;
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; margin-bottom: 1rem;
+}
+.alert-banner.info  { background: var(--blue-dim); border: 1px solid rgba(79,142,247,0.2); color: var(--blue); }
+.alert-banner.warn  { background: var(--amber-dim); border: 1px solid rgba(240,180,41,0.2); color: var(--amber); }
+.alert-banner.success { background: var(--accent-dim); border: 1px solid rgba(0,229,160,0.2); color: var(--accent); }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--panel); border: 1px solid var(--border2);
+  border-radius: 14px; width: 520px; max-width: 95vw;
+  max-height: 90vh; overflow-y: auto;
+  animation: fadeUp 0.2s ease;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); }
+.modal-close { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 20px; line-height: 1; padding: 4px; border-radius: 4px; transition: color 0.15s; }
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 1.5rem; }
+.modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+
+/* Toast */
+.toast-stack { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toastx {
+  background: var(--panel); border: 1px solid var(--border2);
+  border-radius: 9px; padding: 0.7rem 1.1rem;
+  font-size: 13px; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  animation: fadeUp 0.25s ease; min-width: 240px;
+  transition: opacity 0.3s;
+}
+.toastx.t-success { border-left: 3px solid var(--accent); }
+.toastx.t-error   { border-left: 3px solid var(--red); }
+.toastx.t-info    { border-left: 3px solid var(--blue); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+
+/* Responsive */
+@media(max-width:900px){
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width:640px){
+  :root { --sidebar-w: 200px; }
+  .form-row { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN SCREEN
+     ============================================================ -->
+<div id="loginScreen">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="ico">M</div>
+      <div class="brand">Mayor<span>ist</span>a <span style="color:var(--text3);font-weight:300">Admin</span></div>
+    </div>
+    <div class="login-subtitle">Panel de Administración</div>
+    <div class="login-error" id="loginError">❌ Usuario o contraseña incorrectos</div>
+    <div class="lf-group">
+      <label>Usuario</label>
+      <input type="text" id="loginUser" placeholder="admin" autocomplete="username" />
+    </div>
+    <div class="lf-group">
+      <label>Contraseña</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="btn-login" onclick="doLogin()">Ingresar al Panel →</button>
+    <p class="login-hint">Demo: <code>admin</code> / <code>admin123</code></p>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN APP
+     ============================================================ -->
+<div id="adminApp">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="ico">M</div>
+      <div class="name">Mayor<span>ist</span>a</div>
+    </div>
+    <div class="sidebar-role">Administrador</div>
+
+    <div class="nav-section-label">Principal</div>
+    <button class="nav-item active" onclick="showPanel('dashboard', this)"><span class="ni">◈</span> Dashboard</button>
+    <button class="nav-item" onclick="showPanel('usuarios', this)"><span class="ni">👥</span> Usuarios / Altas <span class="nav-badge" id="badgeAltas">3</span></button>
+    <button class="nav-item" onclick="showPanel('pedidos', this)"><span class="ni">📦</span> Pedidos</button>
+    <button class="nav-item" onclick="showPanel('productos', this)"><span class="ni">🏷️</span> Productos</button>
+
+    <div class="nav-section-label">Gestión</div>
+    <button class="nav-item" onclick="showPanel('formularios', this)"><span class="ni">📋</span> Form. de Altas</button>
+    <button class="nav-item" onclick="showPanel('fechas', this)"><span class="ni">🗓️</span> Fechas Límite</button>
+    <button class="nav-item" onclick="showPanel('reportes', this)"><span class="ni">📊</span> Reportes</button>
+    <button class="nav-item" onclick="showPanel('excel', this)"><span class="ni">📥</span> Exportar Excel</button>
+
+    <div class="nav-section-label">Sistema</div>
+    <button class="nav-item" onclick="showPanel('api', this)"><span class="ni">🔌</span> API Config</button>
+    <button class="nav-item" onclick="showPanel('config', this)"><span class="ni">⚙️</span> Configuración</button>
+
+    <div class="sidebar-footer">
+      <div class="admin-user">
+        <div class="admin-avatar">AD</div>
+        <div class="admin-info">
+          <div class="aname">Admin Principal</div>
+          <div class="arole">Superusuario</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Cerrar sesión">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-area">
+    <div class="topbar">
+      <h1 id="topbarTitle">Dashboard</h1>
+      <div class="topbar-actions">
+        <div id="topbarActions"></div>
+        <span style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace" id="topbarDate"></span>
+      </div>
+    </div>
+    <div class="content" id="mainContent">
+
+      <!-- ======= DASHBOARD ======= -->
+      <div class="panel active" id="p-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi-card c-green"><div class="kpi-icon">💰</div><div class="kpi-label">Ventas este mes</div><div class="kpi-val">$4.2M</div><div class="kpi-sub">+18% vs mes anterior</div></div>
+          <div class="kpi-card c-blue"><div class="kpi-icon">📦</div><div class="kpi-label">Pedidos activos</div><div class="kpi-val">87</div><div class="kpi-sub">12 pendientes aprobación</div></div>
+          <div class="kpi-card c-amber"><div class="kpi-icon">👥</div><div class="kpi-label">Clientes activos</div><div class="kpi-val">234</div><div class="kpi-sub">3 solicitudes pendientes</div></div>
+          <div class="kpi-card c-red"><div class="kpi-icon">⚠️</div><div class="kpi-label">Stock crítico</div><div class="kpi-val">7</div><div class="kpi-sub">Productos bajo mínimo</div></div>
+          <div class="kpi-card c-purple"><div class="kpi-icon">🏷️</div><div class="kpi-label">Productos activos</div><div class="kpi-val">248</div><div class="kpi-sub">4 categorías</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>Ventas últimas 8 semanas</h3><span style="font-size:11px;color:var(--text3)">AR$</span></div>
+            <div class="card-body">
+              <div class="mini-chart" id="salesChart"></div>
+              <div class="chart-labels" id="salesLabels"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Actividad reciente</h3></div>
+            <div class="card-body" style="padding:0.75rem 1.5rem">
+              <div class="activity-item"><div class="act-dot green"></div><div><div class="act-text"><strong>Empresa XYZ S.A.</strong> realizó un pedido flash por $345.000</div><div class="act-time">hace 12 min</div></div></div>
+              <div class="activity-item"><div class="act-dot amber"></div><div><div class="act-text">Nueva solicitud de alta: <strong>Distribuidora Norte</strong></div><div class="act-time">hace 43 min</div></div></div>
+              <div class="activity-item"><div class="act-dot blue"></div><div><div class="act-text">Stock actualizado: <strong>Tablet 10" HD</strong> — 45 unidades</div><div class="act-time">hace 1h 20m</div></div></div>
+              <div class="activity-item"><div class="act-dot red"></div><div><div class="act-text"><strong>Auriculares BT Pro</strong> por debajo del stock mínimo</div><div class="act-time">hace 2h</div></div></div>
+              <div class="activity-item"><div class="act-dot green"></div><div><div class="act-text"><strong>Comercial Sur LTDA</strong> aprobada y activada</div><div class="act-time">hace 3h 15m</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>Top categorías por ventas</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text)">⚡ Electrónica</span><span style="color:var(--accent)">$1.8M</span></div><div class="prog-track"><div class="prog-fill" style="width:85%"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text)">🏠 Hogar</span><span style="color:var(--blue)">$920K</span></div><div class="prog-track"><div class="prog-fill" style="width:44%;background:var(--blue)"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text)">👕 Ropa</span><span style="color:var(--amber)">$750K</span></div><div class="prog-track"><div class="prog-fill" style="width:36%;background:var(--amber)"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text)">⚽ Deportes</span><span style="color:var(--purple)">$580K</span></div><div class="prog-track"><div class="prog-fill" style="width:28%;background:var(--purple)"></div></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Alertas del sistema</h3></div>
+            <div class="card-body" style="padding:0.75rem 1.5rem">
+              <div class="alert-banner warn">⚠️ Cierre de pedidos Electrónica en <strong>4 días</strong></div>
+              <div class="alert-banner info">ℹ️ 3 solicitudes de alta pendientes de revisión</div>
+              <div class="alert-banner warn">⚠️ 7 productos con stock crítico</div>
+              <div class="alert-banner success">✓ Backup automático completado hoy a las 03:00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= USUARIOS ======= -->
+      <div class="panel" id="p-usuarios">
+        <div class="alert-banner warn" style="margin-bottom:1rem">⚠️ Hay <strong>3 solicitudes de alta</strong> pendientes de aprobación</div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Solicitudes de Alta Pendientes</h3>
+            <span class="badge badge-amber">3 pendientes</span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>Empresa</th><th>RUT/Tax ID</th><th>Contacto</th><th>Email</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Distribuidora Norte S.R.L.</strong></td><td><code style="font-size:11px;color:var(--text3)">20-87654321-0</code></td><td>Carlos Méndez</td><td>cmendez@dnorte.com</td><td>06/05/2025</td><td><span class="badge badge-amber">Pendiente</span></td><td><button class="action-btn" onclick="aprobarAlta(this,'Distribuidora Norte')">✓ Aprobar</button><button class="action-btn danger" onclick="rechazarAlta(this)">✗ Rechazar</button></td></tr>
+                <tr><td><strong>Comercio El Puente S.A.</strong></td><td><code style="font-size:11px;color:var(--text3)">30-11223344-5</code></td><td>Ana Rodríguez</td><td>ana@elpuente.com</td><td>05/05/2025</td><td><span class="badge badge-amber">Pendiente</span></td><td><button class="action-btn" onclick="aprobarAlta(this,'El Puente')">✓ Aprobar</button><button class="action-btn danger" onclick="rechazarAlta(this)">✗ Rechazar</button></td></tr>
+                <tr><td><strong>MegaStore LTDA</strong></td><td><code style="font-size:11px;color:var(--text3)">20-99887766-2</code></td><td>Pedro Sánchez</td><td>pedro@megastore.com</td><td>04/05/2025</td><td><span class="badge badge-blue">En revisión</span></td><td><button class="action-btn" onclick="aprobarAlta(this,'MegaStore')">✓ Aprobar</button><button class="action-btn danger" onclick="rechazarAlta(this)">✗ Rechazar</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Clientes Activos</h3>
+            <button class="tb-btn accent" onclick="openModal('modalAddUser')">+ Nuevo cliente</button>
+          </div>
+          <div class="card-body" style="padding:0.75rem 1.5rem 0">
+            <div class="search-bar">
+              <input type="text" placeholder="Buscar empresa, RUT, contacto..." oninput="filterTable(this,'usersTable')" />
+              <select><option>Todos los estados</option><option>Activos</option><option>Suspendidos</option></select>
+            </div>
+          </div>
+          <table class="data-table" id="usersTable">
+            <thead><tr><th>Empresa</th><th>RUT/Tax ID</th><th>Contacto</th><th>Categoría</th><th>Pedidos</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Empresa ABC S.A.</strong></td><td><code style="font-size:11px;color:var(--text3)">20-12345678-9</code></td><td>Juan Pérez</td><td><span class="badge badge-purple">Mayorista A</span></td><td>37</td><td><span class="badge badge-green">Activo</span></td><td><button class="action-btn">✏️ Editar</button><button class="action-btn danger">⏸ Suspender</button></td></tr>
+              <tr><td><strong>Comercial Sur LTDA</strong></td><td><code style="font-size:11px;color:var(--text3)">30-98765432-1</code></td><td>María García</td><td><span class="badge badge-blue">Mayorista B</span></td><td>22</td><td><span class="badge badge-green">Activo</span></td><td><button class="action-btn">✏️ Editar</button><button class="action-btn danger">⏸ Suspender</button></td></tr>
+              <tr><td><strong>Importadora Delta</strong></td><td><code style="font-size:11px;color:var(--text3)">20-55443322-6</code></td><td>Roberto Díaz</td><td><span class="badge badge-amber">Distribuidor</span></td><td>8</td><td><span class="badge badge-red">Suspendido</span></td><td><button class="action-btn">✏️ Editar</button><button class="action-btn" onclick="showToast('Cliente reactivado','t-success')">▶ Activar</button></td></tr>
+              <tr><td><strong>TechMart S.A.</strong></td><td><code style="font-size:11px;color:var(--text3)">20-77889900-3</code></td><td>Lucía Torres</td><td><span class="badge badge-purple">Mayorista A</span></td><td>51</td><td><span class="badge badge-green">Activo</span></td><td><button class="action-btn">✏️ Editar</button><button class="action-btn danger">⏸ Suspender</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ======= PEDIDOS ======= -->
+      <div class="panel" id="p-pedidos">
+        <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi-card c-blue"><div class="kpi-label">Total pedidos</div><div class="kpi-val" style="color:var(--blue)">87</div></div>
+          <div class="kpi-card c-amber"><div class="kpi-label">Pendientes</div><div class="kpi-val" style="color:var(--amber)">12</div></div>
+          <div class="kpi-card c-green"><div class="kpi-label">Entregados</div><div class="kpi-val">63</div></div>
+          <div class="kpi-card c-red"><div class="kpi-label">Cancelados</div><div class="kpi-val" style="color:var(--red)">5</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Gestión de Pedidos</h3><button class="tb-btn accent" onclick="showToast('Exportando pedidos...','t-info')">📥 Exportar</button></div>
+          <div class="card-body" style="padding:0.75rem 1.5rem 0">
+            <div class="search-bar">
+              <input type="text" placeholder="Buscar N° pedido, empresa..." oninput="filterTable(this,'pedidosTable')" />
+              <select id="filterEstadoPedido" onchange="filterTable(document.querySelector('#p-pedidos .search-bar input'),'pedidosTable')">
+                <option>Todos</option><option>Pendiente</option><option>En proceso</option><option>Entregado</option><option>Cancelado</option>
+              </select>
+            </div>
+          </div>
+          <table class="data-table" id="pedidosTable">
+            <thead><tr><th>N° Pedido</th><th>Empresa</th><th>Fecha</th><th>Ítems</th><th>Total</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody>
+              <tr><td><code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px">#PED-10482</code></td><td><strong>Empresa ABC S.A.</strong></td><td>06/05/2025</td><td>8</td><td>$345.000</td><td><span class="badge badge-amber">Pendiente</span></td><td><button class="action-btn" onclick="showToast('Pedido aprobado','t-success')">✓ Aprobar</button><button class="action-btn danger" onclick="showToast('Pedido cancelado','t-error')">✗ Cancelar</button></td></tr>
+              <tr><td><code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px">#PED-10481</code></td><td><strong>TechMart S.A.</strong></td><td>05/05/2025</td><td>15</td><td>$892.500</td><td><span class="badge badge-blue">En proceso</span></td><td><button class="action-btn" onclick="showToast('Estado actualizado','t-success')">📦 Entregar</button><button class="action-btn danger">✗ Cancelar</button></td></tr>
+              <tr><td><code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px">#PED-10479</code></td><td><strong>Comercial Sur LTDA</strong></td><td>04/05/2025</td><td>5</td><td>$127.300</td><td><span class="badge badge-green">Entregado</span></td><td><button class="action-btn">🧾 Factura</button></td></tr>
+              <tr><td><code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px">#PED-10478</code></td><td><strong>Empresa ABC S.A.</strong></td><td>03/05/2025</td><td>22</td><td>$1.240.000</td><td><span class="badge badge-green">Entregado</span></td><td><button class="action-btn">🧾 Factura</button></td></tr>
+              <tr><td><code style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px">#PED-10475</code></td><td><strong>Importadora Delta</strong></td><td>01/05/2025</td><td>3</td><td>$89.000</td><td><span class="badge badge-red">Cancelado</span></td><td><span style="font-size:11px;color:var(--text3)">—</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ======= PRODUCTOS ======= -->
+      <div class="panel" id="p-productos">
+        <div class="card">
+          <div class="card-header">
+            <h3>Catálogo de Productos</h3>
+            <div style="display:flex;gap:8px">
+              <button class="tb-btn" onclick="showToast('Importando desde Excel...','t-info')">📤 Importar</button>
+              <button class="tb-btn accent" onclick="openModal('modalAddProd')">+ Agregar producto</button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0.75rem 1.5rem 0">
+            <div class="search-bar">
+              <input type="text" placeholder="Buscar código, nombre..." oninput="filterTable(this,'prodTable')" />
+              <select><option>Todas las categorías</option><option>Electrónica</option><option>Hogar</option><option>Ropa</option><option>Deportes</option></select>
+            </div>
+          </div>
+          <table class="data-table" id="prodTable">
+            <thead><tr><th>Código</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Mínimo</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="prodTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ======= FORMULARIOS DE ALTA ======= -->
+      <div class="panel" id="p-formularios">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>Campos del Formulario de Alta</h3><button class="tb-btn accent" onclick="showToast('Campo agregado','t-success')">+ Agregar campo</button></div>
+            <div class="card-body" style="padding:0">
+              <table class="data-table">
+                <thead><tr><th>Campo</th><th>Tipo</th><th>Requerido</th><th>Visible</th><th>Orden</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Nombre de empresa</strong></td><td><span class="badge badge-blue">Texto</span></td><td><span class="badge badge-green">Sí</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>1</td></tr>
+                  <tr><td><strong>RUT / Tax ID</strong></td><td><span class="badge badge-blue">Texto</span></td><td><span class="badge badge-green">Sí</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>2</td></tr>
+                  <tr><td><strong>Rubro / Industria</strong></td><td><span class="badge badge-purple">Select</span></td><td><span class="badge badge-gray">No</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>3</td></tr>
+                  <tr><td><strong>Volumen estimado</strong></td><td><span class="badge badge-purple">Select</span></td><td><span class="badge badge-gray">No</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>4</td></tr>
+                  <tr><td><strong>Dirección comercial</strong></td><td><span class="badge badge-blue">Texto</span></td><td><span class="badge badge-gray">No</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>5</td></tr>
+                  <tr><td><strong>Nombre y apellido</strong></td><td><span class="badge badge-blue">Texto</span></td><td><span class="badge badge-green">Sí</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>6</td></tr>
+                  <tr><td><strong>Email</strong></td><td><span class="badge badge-amber">Email</span></td><td><span class="badge badge-green">Sí</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>7</td></tr>
+                  <tr><td><strong>Teléfono</strong></td><td><span class="badge badge-amber">Tel</span></td><td><span class="badge badge-gray">No</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>8</td></tr>
+                  <tr><td><strong>Mensaje adicional</strong></td><td><span class="badge badge-gray">Textarea</span></td><td><span class="badge badge-gray">No</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td>9</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:1.25rem">
+              <div class="card-header"><h3>Configuración del formulario</h3></div>
+              <div class="card-body">
+                <div class="toggle-row"><div><div class="tl">Requiere aprobación manual</div><div class="ts">Revisar cada solicitud antes de activar</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+                <div class="toggle-row"><div><div class="tl">Email de bienvenida automático</div><div class="ts">Enviar email al aprobarse</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+                <div class="toggle-row"><div><div class="tl">Notificar al admin</div><div class="ts">Alerta por cada nueva solicitud</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+                <div class="toggle-row"><div><div class="tl">CAPTCHA habilitado</div><div class="ts">Proteger contra bots</div></div><div class="switch" onclick="this.classList.toggle('on')"></div></div>
+                <div class="form-actions" style="margin-top:1rem">
+                  <button class="tb-btn accent" onclick="showToast('Configuración guardada','t-success')">Guardar cambios</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3>Mensaje de aprobación</h3></div>
+              <div class="card-body">
+                <div class="fg"><label>Asunto del email</label><input type="text" value="✓ Tu acceso al Portal Mayorista fue aprobado" /></div>
+                <div class="fg" style="margin-top:10px"><label>Cuerpo del mensaje</label><textarea rows="4">Hola {nombre},\n\nNos complace informarte que tu solicitud de alta fue aprobada. Ya podés acceder al portal con tu email registrado.\n\nSaludos,\nEquipo Mayorista</textarea></div>
+                <div class="form-actions" style="margin-top:0.75rem"><button class="tb-btn accent" onclick="showToast('Plantilla guardada','t-success')">Guardar plantilla</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= FECHAS LÍMITE ======= -->
+      <div class="panel" id="p-fechas">
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-header"><h3>Fechas de Cierre por Categoría</h3><button class="tb-btn accent" onclick="openModal('modalAddFecha')">+ Agregar fecha</button></div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>Categoría</th><th>Período</th><th>Fecha cierre</th><th>Días restantes</th><th>Activo</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr><td><strong>⚡ Electrónica</strong></td><td>Mayo 2025</td><td>09/05/2025</td><td><span class="badge badge-red">4 días</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td><button class="action-btn">✏️ Editar</button><button class="action-btn danger">🗑</button></td></tr>
+                <tr><td><strong>🏠 Hogar</strong></td><td>Mayo 2025</td><td>15/05/2025</td><td><span class="badge badge-amber">10 días</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td><button class="action-btn">✏️ Editar</button><button class="action-btn danger">🗑</button></td></tr>
+                <tr><td><strong>👕 Ropa</strong></td><td>Mayo 2025</td><td>20/05/2025</td><td><span class="badge badge-green">15 días</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td><button class="action-btn">✏️ Editar</button><button class="action-btn danger">🗑</button></td></tr>
+                <tr><td><strong>⚽ Deportes</strong></td><td>Mayo 2025</td><td>28/05/2025</td><td><span class="badge badge-green">23 días</span></td><td><div class="switch on" onclick="this.classList.toggle('on')"></div></td><td><button class="action-btn">✏️ Editar</button><button class="action-btn danger">🗑</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Agregar / Editar fecha de cierre</h3></div>
+          <div class="card-body">
+            <div class="form-row triple">
+              <div class="fg"><label>Categoría</label><select><option>Electrónica</option><option>Hogar</option><option>Ropa</option><option>Deportes</option></select></div>
+              <div class="fg"><label>Período</label><input type="text" placeholder="Ej: Junio 2025" /></div>
+              <div class="fg"><label>Fecha de cierre</label><input type="date" /></div>
+            </div>
+            <div class="form-row">
+              <div class="fg"><label>Nota interna</label><input type="text" placeholder="Opcional..." /></div>
+              <div class="fg"><label>Notificar clientes</label><select><option>Sí, 7 días antes</option><option>Sí, 3 días antes</option><option>No notificar</option></select></div>
+            </div>
+            <div class="form-actions"><button class="tb-btn accent" onclick="showToast('Fecha guardada','t-success')">Guardar fecha</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= REPORTES ======= -->
+      <div class="panel" id="p-reportes">
+        <div class="kpi-grid">
+          <div class="kpi-card c-green"><div class="kpi-label">Ingresos YTD</div><div class="kpi-val">$18.4M</div><div class="kpi-sub">Enero–Mayo 2025</div></div>
+          <div class="kpi-card c-blue"><div class="kpi-label">Pedidos YTD</div><div class="kpi-val" style="color:var(--blue)">412</div><div class="kpi-sub">Promedio 82/mes</div></div>
+          <div class="kpi-card c-amber"><div class="kpi-label">Ticket promedio</div><div class="kpi-val" style="color:var(--amber)">$44.7K</div><div class="kpi-sub">+6% vs 2024</div></div>
+          <div class="kpi-card c-purple"><div class="kpi-label">Tasa retención</div><div class="kpi-val" style="color:var(--purple)">89%</div><div class="kpi-sub">Clientes activos</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>Ventas mensuales 2025</h3></div>
+            <div class="card-body">
+              <div class="mini-chart" id="reportChart"></div>
+              <div class="chart-labels" id="reportLabels"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Top 5 clientes por volumen</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--text)">TechMart S.A.</span><span style="color:var(--accent)">$4.2M</span></div><div class="prog-track"><div class="prog-fill" style="width:100%"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--text)">Empresa ABC S.A.</span><span style="color:var(--accent)">$3.1M</span></div><div class="prog-track"><div class="prog-fill" style="width:74%"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--text)">Comercial Sur LTDA</span><span style="color:var(--blue)">$1.8M</span></div><div class="prog-track"><div class="prog-fill" style="width:43%;background:var(--blue)"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--text)">Distribuidora Norte</span><span style="color:var(--amber)">$980K</span></div><div class="prog-track"><div class="prog-fill" style="width:23%;background:var(--amber)"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:var(--text)">MegaStore LTDA</span><span style="color:var(--purple)">$730K</span></div><div class="prog-track"><div class="prog-fill" style="width:17%;background:var(--purple)"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Generar reporte personalizado</h3></div>
+          <div class="card-body">
+            <div class="form-row triple">
+              <div class="fg"><label>Tipo de reporte</label><select><option>Ventas por período</option><option>Pedidos por cliente</option><option>Stock y movimientos</option><option>Solicitudes de alta</option></select></div>
+              <div class="fg"><label>Desde</label><input type="date" /></div>
+              <div class="fg"><label>Hasta</label><input type="date" /></div>
+            </div>
+            <div class="form-row">
+              <div class="fg"><label>Agrupar por</label><select><option>Categoría</option><option>Cliente</option><option>Mes</option><option>Vendedor</option></select></div>
+              <div class="fg"><label>Formato de salida</label><select><option>Excel (.xlsx)</option><option>PDF</option><option>CSV</option></select></div>
+            </div>
+            <div class="form-actions"><button class="tb-btn accent" onclick="showToast('📊 Generando reporte...','t-info')">Generar reporte</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= EXPORTAR EXCEL ======= -->
+      <div class="panel" id="p-excel">
+        <div class="alert-banner info" style="margin-bottom:1.25rem">ℹ️ Los archivos Excel se generan con los datos actuales del sistema. El archivo se descargará automáticamente.</div>
+        <div class="three-col">
+          <div class="card" style="text-align:center;cursor:pointer" onclick="exportExcel('ventas')">
+            <div class="card-body" style="padding:2rem 1.5rem">
+              <div style="font-size:40px;margin-bottom:0.75rem">📊</div>
+              <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Ventas</div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Historial completo de ventas con detalles por pedido, cliente y categoría</div>
+              <button class="tb-btn accent" style="width:100%;justify-content:center">📥 Exportar ventas.xlsx</button>
+            </div>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="exportExcel('pedidos')">
+            <div class="card-body" style="padding:2rem 1.5rem">
+              <div style="font-size:40px;margin-bottom:0.75rem">📦</div>
+              <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Pedidos</div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Todos los pedidos con estado, cliente, fecha y monto total</div>
+              <button class="tb-btn accent" style="width:100%;justify-content:center">📥 Exportar pedidos.xlsx</button>
+            </div>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="exportExcel('clientes')">
+            <div class="card-body" style="padding:2rem 1.5rem">
+              <div style="font-size:40px;margin-bottom:0.75rem">👥</div>
+              <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Clientes</div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Base de clientes, categorías, contactos y estado de cuenta</div>
+              <button class="tb-btn accent" style="width:100%;justify-content:center">📥 Exportar clientes.xlsx</button>
+            </div>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="exportExcel('productos')">
+            <div class="card-body" style="padding:2rem 1.5rem">
+              <div style="font-size:40px;margin-bottom:0.75rem">🏷️</div>
+              <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Productos</div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Catálogo completo con precios, stock y categorías</div>
+              <button class="tb-btn accent" style="width:100%;justify-content:center">📥 Exportar productos.xlsx</button>
+            </div>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="exportExcel('stock')">
+            <div class="card-body" style="padding:2rem 1.5rem">
+              <div style="font-size:40px;margin-bottom:0.75rem">📋</div>
+              <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Stock crítico</div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Productos bajo nivel mínimo con alertas y movimientos recientes</div>
+              <button class="tb-btn accent" style="width:100%;justify-content:center">📥 Exportar stock.xlsx</button>
+            </div>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="exportExcel('altas')">
+            <div class="card-body" style="padding:2rem 1.5rem">
+              <div style="font-size:40px;margin-bottom:0.75rem">📝</div>
+              <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">Solicitudes de alta</div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:1rem">Historial de altas aprobadas, rechazadas y pendientes</div>
+              <button class="tb-btn accent" style="width:100%;justify-content:center">📥 Exportar altas.xlsx</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Exportación personalizada</h3></div>
+          <div class="card-body">
+            <div class="form-row triple">
+              <div class="fg"><label>Dataset</label><select><option>Ventas</option><option>Pedidos</option><option>Clientes</option><option>Productos</option></select></div>
+              <div class="fg"><label>Desde</label><input type="date" /></div>
+              <div class="fg"><label>Hasta</label><input type="date" /></div>
+            </div>
+            <div class="form-row">
+              <div class="fg"><label>Incluir columnas</label><input type="text" placeholder="Ej: fecha, empresa, total, estado" /></div>
+              <div class="fg"><label>Separador CSV</label><select><option>Coma (,)</option><option>Punto y coma (;)</option><option>Tabulación</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="tb-btn" onclick="showToast('Exportando CSV...','t-info')">📄 Exportar CSV</button>
+              <button class="tb-btn accent" onclick="exportExcel('custom')">📥 Exportar Excel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= API CONFIG ======= -->
+      <div class="panel" id="p-api">
+        <div class="alert-banner info" style="margin-bottom:1.25rem">🔌 Configurá integraciones con servicios externos mediante API REST. Las claves se almacenan cifradas.</div>
+        <div class="two-col">
+          <div>
+            <div class="card" style="margin-bottom:1.25rem">
+              <div class="card-header"><h3>API Keys del sistema</h3><button class="tb-btn accent" onclick="openModal('modalAddApi')">+ Nueva API Key</button></div>
+              <div class="card-body" style="padding:0">
+                <table class="data-table">
+                  <thead><tr><th>Nombre</th><th>Key</th><th>Permisos</th><th>Creada</th><th>Acciones</th></tr></thead>
+                  <tbody>
+                    <tr><td><strong>Portal B2B</strong></td><td><code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)">sk-b2b-••••••••4a2f</code></td><td><span class="badge badge-green">Lectura/Escritura</span></td><td>01/01/2025</td><td><button class="action-btn">👁 Ver</button><button class="action-btn danger">🗑</button></td></tr>
+                    <tr><td><strong>App Móvil</strong></td><td><code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)">sk-mob-••••••••9c1d</code></td><td><span class="badge badge-blue">Solo lectura</span></td><td>15/02/2025</td><td><button class="action-btn">👁 Ver</button><button class="action-btn danger">🗑</button></td></tr>
+                    <tr><td><strong>Webhook ventas</strong></td><td><code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)">wh-••••••••3b8e</code></td><td><span class="badge badge-amber">Webhook</span></td><td>22/03/2025</td><td><button class="action-btn">👁 Ver</button><button class="action-btn danger">🗑</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3>Endpoints disponibles</h3></div>
+              <div class="card-body" style="padding:0.75rem 1.5rem">
+                <div style="display:flex;flex-direction:column;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px">
+                  <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--accent);min-width:50px">GET</span><span style="color:var(--text2)">/api/v1/products</span><span style="color:var(--text3)">Lista productos</span></div>
+                  <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--accent);min-width:50px">GET</span><span style="color:var(--text2)">/api/v1/orders</span><span style="color:var(--text3)">Lista pedidos</span></div>
+                  <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--blue);min-width:50px">POST</span><span style="color:var(--text2)">/api/v1/orders</span><span style="color:var(--text3)">Crear pedido</span></div>
+                  <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--accent);min-width:50px">GET</span><span style="color:var(--text2)">/api/v1/clients</span><span style="color:var(--text3)">Lista clientes</span></div>
+                  <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--amber);min-width:50px">PUT</span><span style="color:var(--text2)">/api/v1/clients/:id</span><span style="color:var(--text3)">Actualizar cliente</span></div>
+                  <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--blue);min-width:50px">POST</span><span style="color:var(--text2)">/api/v1/webhook</span><span style="color:var(--text3)">Recibir evento</span></div>
+                  <div style="display:flex;gap:10px;align-items:center"><span style="color:var(--accent);min-width:50px">GET</span><span style="color:var(--text2)">/api/v1/reports</span><span style="color:var(--text3)">Reportes</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:1.25rem">
+              <div class="card-header"><h3>Integraciones externas</h3></div>
+              <div class="card-body">
+                <div class="toggle-row"><div><div class="tl">📧 SendGrid (Email)</div><div class="ts">Envío de emails transaccionales</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+                <div class="toggle-row"><div><div class="tl">📱 WhatsApp Business</div><div class="ts">Notificaciones por WA</div></div><div class="switch" onclick="this.classList.toggle('on')"></div></div>
+                <div class="toggle-row"><div><div class="tl">💳 MercadoPago</div><div class="ts">Procesamiento de pagos</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+                <div class="toggle-row"><div><div class="tl">📦 ERP / SAP</div><div class="ts">Sincronización de stock</div></div><div class="switch" onclick="this.classList.toggle('on')"></div></div>
+                <div class="toggle-row"><div><div class="tl">📊 Google Analytics</div><div class="ts">Seguimiento de uso del portal</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3>Configurar integración</h3></div>
+              <div class="card-body">
+                <div class="fg" style="margin-bottom:10px"><label>Servicio</label><select><option>SendGrid</option><option>WhatsApp Business</option><option>MercadoPago</option><option>ERP / SAP</option><option>Personalizado</option></select></div>
+                <div class="fg" style="margin-bottom:10px"><label>URL / Endpoint</label><input type="text" placeholder="https://api.servicio.com/v1/" /></div>
+                <div class="fg" style="margin-bottom:10px"><label>API Key / Token</label><input type="password" placeholder="••••••••••••••••" /></div>
+                <div class="fg" style="margin-bottom:10px"><label>Eventos a notificar</label><select><option>Nuevo pedido</option><option>Pedido aprobado</option><option>Alta aprobada</option><option>Stock crítico</option></select></div>
+                <div class="form-actions">
+                  <button class="tb-btn" onclick="showToast('Probando conexión...','t-info')">🔗 Probar conexión</button>
+                  <button class="tb-btn accent" onclick="showToast('Integración guardada','t-success')">Guardar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======= CONFIGURACIÓN ======= -->
+      <div class="panel" id="p-config">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>Configuración general</h3></div>
+            <div class="card-body">
+              <div class="fg" style="margin-bottom:10px"><label>Nombre del portal</label><input type="text" value="Portal Mayorista B2B" /></div>
+              <div class="fg" style="margin-bottom:10px"><label>Email de contacto</label><input type="email" value="admin@mayorista.com" /></div>
+              <div class="fg" style="margin-bottom:10px"><label>Moneda</label><select><option>ARS — Peso Argentino</option><option>USD — Dólar</option><option>UYU — Peso Uruguayo</option></select></div>
+              <div class="fg" style="margin-bottom:10px"><label>Zona horaria</label><select><option>America/Argentina/Buenos_Aires</option><option>America/Montevideo</option><option>America/Santiago</option></select></div>
+              <div class="form-actions"><button class="tb-btn accent" onclick="showToast('Configuración guardada','t-success')">Guardar</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Seguridad y acceso</h3></div>
+            <div class="card-body">
+              <div class="toggle-row"><div><div class="tl">Autenticación de 2 factores</div><div class="ts">Requerir 2FA para admins</div></div><div class="switch" onclick="this.classList.toggle('on')"></div></div>
+              <div class="toggle-row"><div><div class="tl">Sesiones concurrentes</div><div class="ts">Permitir múltiples sesiones</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+              <div class="toggle-row"><div><div class="tl">Log de auditoría</div><div class="ts">Registrar todas las acciones</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+              <div class="toggle-row"><div><div class="tl">Modo mantenimiento</div><div class="ts">Bloquear acceso del portal</div></div><div class="switch" onclick="this.classList.toggle('on')"></div></div>
+              <div class="fg" style="margin-top:1rem;margin-bottom:10px"><label>Nueva contraseña admin</label><input type="password" placeholder="Mínimo 8 caracteres" /></div>
+              <div class="form-actions"><button class="tb-btn accent" onclick="showToast('Contraseña actualizada','t-success')">Cambiar contraseña</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main-area -->
+</div><!-- /adminApp -->
+
+<!-- ============================================================
+     MODALES
+     ============================================================ -->
+<div class="modal-overlay" id="modalAddUser">
+  <div class="modal">
+    <div class="modal-header"><h3>Agregar cliente</h3><button class="modal-close" onclick="closeModal('modalAddUser')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="fg"><label>Empresa *</label><input type="text" placeholder="Nombre S.A." /></div><div class="fg"><label>RUT/Tax ID *</label><input type="text" placeholder="20-00000000-0" /></div></div>
+      <div class="form-row"><div class="fg"><label>Contacto *</label><input type="text" placeholder="Nombre apellido" /></div><div class="fg"><label>Email *</label><input type="email" placeholder="email@empresa.com" /></div></div>
+      <div class="form-row"><div class="fg"><label>Categoría</label><select><option>Mayorista A</option><option>Mayorista B</option><option>Distribuidor</option></select></div><div class="fg"><label>Teléfono</label><input type="tel" placeholder="+54 11..." /></div></div>
+    </div>
+    <div class="modal-footer"><button class="tb-btn" onclick="closeModal('modalAddUser')">Cancelar</button><button class="tb-btn accent" onclick="closeModal('modalAddUser');showToast('Cliente agregado correctamente','t-success')">Crear cliente</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAddProd">
+  <div class="modal">
+    <div class="modal-header"><h3>Agregar producto</h3><button class="modal-close" onclick="closeModal('modalAddProd')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="fg"><label>Código *</label><input type="text" placeholder="CAT-001" /></div><div class="fg"><label>Nombre *</label><input type="text" placeholder="Nombre del producto" /></div></div>
+      <div class="form-row"><div class="fg"><label>Categoría</label><select><option>Electrónica</option><option>Hogar</option><option>Ropa</option><option>Deportes</option></select></div><div class="fg"><label>Precio *</label><input type="number" placeholder="0" /></div></div>
+      <div class="form-row"><div class="fg"><label>Stock actual</label><input type="number" placeholder="0" /></div><div class="fg"><label>Stock mínimo</label><input type="number" placeholder="10" /></div></div>
+      <div class="form-row full"><div class="fg"><label>Descripción</label><textarea rows="2" placeholder="Descripción del producto..."></textarea></div></div>
+    </div>
+    <div class="modal-footer"><button class="tb-btn" onclick="closeModal('modalAddProd')">Cancelar</button><button class="tb-btn accent" onclick="closeModal('modalAddProd');showToast('Producto agregado al catálogo','t-success')">Agregar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAddFecha">
+  <div class="modal">
+    <div class="modal-header"><h3>Nueva fecha de cierre</h3><button class="modal-close" onclick="closeModal('modalAddFecha')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="fg"><label>Categoría</label><select><option>Electrónica</option><option>Hogar</option><option>Ropa</option><option>Deportes</option><option>General</option></select></div><div class="fg"><label>Período</label><input type="text" placeholder="Ej: Junio 2025" /></div></div>
+      <div class="form-row"><div class="fg"><label>Fecha de cierre *</label><input type="date" /></div><div class="fg"><label>Alerta anticipada</label><select><option>3 días antes</option><option>7 días antes</option><option>14 días antes</option></select></div></div>
+    </div>
+    <div class="modal-footer"><button class="tb-btn" onclick="closeModal('modalAddFecha')">Cancelar</button><button class="tb-btn accent" onclick="closeModal('modalAddFecha');showToast('Fecha de cierre creada','t-success')">Guardar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAddApi">
+  <div class="modal">
+    <div class="modal-header"><h3>Crear nueva API Key</h3><button class="modal-close" onclick="closeModal('modalAddApi')">×</button></div>
+    <div class="modal-body">
+      <div class="fg" style="margin-bottom:10px"><label>Nombre descriptivo *</label><input type="text" placeholder="Ej: App Móvil iOS" /></div>
+      <div class="form-row"><div class="fg"><label>Permisos</label><select><option>Lectura y escritura</option><option>Solo lectura</option><option>Solo escritura</option><option>Webhook</option></select></div><div class="fg"><label>Expiración</label><select><option>Sin expiración</option><option>30 días</option><option>90 días</option><option>1 año</option></select></div></div>
+      <div class="fg" style="margin-top:10px"><label>IP permitidas (opcional)</label><input type="text" placeholder="Ej: 192.168.1.0/24 o vacío para cualquiera" /></div>
+    </div>
+    <div class="modal-footer"><button class="tb-btn" onclick="closeModal('modalAddApi')">Cancelar</button><button class="tb-btn accent" onclick="closeModal('modalAddApi');showToast('🔑 API Key generada correctamente','t-success')">Generar Key</button></div>
+  </div>
+</div>
+
+<!-- Toast stack -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+// ================================================================
+// AUTH
+// ================================================================
+const ADMIN_USERS = { admin: 'admin123', superadmin: 'super2025' };
+
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginError');
+  if (ADMIN_USERS[u] && ADMIN_USERS[u] === p) {
+    document.getElementById('loginScreen').style.opacity = '0';
+    document.getElementById('loginScreen').style.transition = 'opacity 0.3s';
+    setTimeout(() => {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminApp').classList.add('visible');
+      initApp(u);
+    }, 300);
+  } else {
+    err.style.display = 'flex';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+function doLogout() {
+  document.getElementById('adminApp').classList.remove('visible');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginScreen').style.opacity = '1';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+// ================================================================
+// NAVIGATION
+// ================================================================
+const panelTitles = {
+  dashboard: 'Dashboard', usuarios: 'Usuarios & Altas',
+  pedidos: 'Gestión de Pedidos', productos: 'Catálogo de Productos',
+  formularios: 'Formulario de Alta', fechas: 'Fechas Límite',
+  reportes: 'Reportes & Estadísticas', excel: 'Exportar Excel',
+  api: 'Configuración de API', config: 'Configuración del Sistema'
+};
+
+function showPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('p-'+name).classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('topbarTitle').textContent = panelTitles[name] || name;
+}
+
+// ================================================================
+// PRODUCT TABLE
+// ================================================================
+const products = [
+  {code:'ELEC-001',name:'Smart TV 55"',cat:'Electrónica',price:189999,stock:28,min:10,img:'📺'},
+  {code:'ELEC-002',name:'Auriculares BT Pro',cat:'Electrónica',price:24990,stock:4,min:15,img:'🎧'},
+  {code:'ELEC-003',name:'Tablet 10" HD',cat:'Electrónica',price:67500,stock:12,min:10,img:'📱'},
+  {code:'ELEC-004',name:'Notebook 15" i5',cat:'Electrónica',price:345000,stock:7,min:5,img:'💻'},
+  {code:'HOG-001',name:'Cafetera Express',cat:'Hogar',price:32000,stock:45,min:20,img:'☕'},
+  {code:'HOG-002',name:'Licuadora 700W',cat:'Hogar',price:18500,stock:33,min:15,img:'🍹'},
+  {code:'HOG-003',name:'Set Sartenes 3pz',cat:'Hogar',price:15200,stock:8,min:10,img:'🍳'},
+  {code:'HOG-004',name:'Aspiradora Robot',cat:'Hogar',price:89000,stock:0,min:5,img:'🤖'},
+  {code:'ROP-001',name:'Campera Invierno',cat:'Ropa',price:12800,stock:60,min:30,img:'🧥'},
+  {code:'ROP-002',name:'Zapatillas Running',cat:'Ropa',price:22400,stock:25,min:20,img:'👟'},
+  {code:'DEP-001',name:'Pelota Fútbol #5',cat:'Deportes',price:5600,stock:88,min:30,img:'⚽'},
+  {code:'DEP-002',name:'Bicicleta MTB 29"',cat:'Deportes',price:225000,stock:3,min:3,img:'🚲'},
+];
+
+function buildProdTable() {
+  const tbody = document.getElementById('prodTableBody');
+  tbody.innerHTML = products.map(p => {
+    const low = p.stock === 0 ? 'badge-red' : p.stock <= p.min ? 'badge-amber' : 'badge-green';
+    const lowTxt = p.stock === 0 ? '✗ Sin stock' : p.stock <= p.min ? '▲ Stock bajo' : '● OK';
+    return `<tr>
+      <td><code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)">${p.code}</code></td>
+      <td><strong>${p.img} ${p.name}</strong></td>
+      <td><span class="badge badge-blue">${p.cat}</span></td>
+      <td>$${p.price.toLocaleString('es-AR')}</td>
+      <td><span class="badge ${low}">${p.stock}</span></td>
+      <td><span style="font-size:12px;color:var(--text3)">${p.min}</span></td>
+      <td><span class="badge ${lowTxt==='● OK'?'badge-green':lowTxt.includes('Sin')?'badge-red':'badge-amber'}">${lowTxt}</span></td>
+      <td><button class="action-btn">✏️</button><button class="action-btn danger" onclick="showToast('Producto eliminado','t-error')">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ================================================================
+// CHARTS
+// ================================================================
+function buildChart(containerId, labelsId, data, labels) {
+  const container = document.getElementById(containerId);
+  const labelsEl  = document.getElementById(labelsId);
+  if (!container) return;
+  const max = Math.max(...data);
+  container.innerHTML = data.map((v, i) => {
+    const h = Math.round((v / max) * 100);
+    return `<div class="bar-col" style="height:${h}%"><div class="tip">${labels[i]}: ${v}</div></div>`;
+  }).join('');
+  if (labelsEl) labelsEl.innerHTML = labels.map(l => `<span>${l}</span>`).join('');
+}
+
+// ================================================================
+// EXCEL EXPORT (CSV download)
+// ================================================================
+const excelData = {
+  ventas:   { headers:['Fecha','Pedido','Empresa','Categoría','Monto','IVA','Total'], rows:[['06/05/2025','#PED-10482','Empresa ABC','Electrónica','$288403','$60665','$345000'],['05/05/2025','#PED-10481','TechMart','Hogar','$744595','$156405','$892500']] },
+  pedidos:  { headers:['N° Pedido','Empresa','Fecha','Items','Total','Estado'], rows:[['#PED-10482','Empresa ABC S.A.','06/05/2025','8','$345000','Pendiente'],['#PED-10481','TechMart S.A.','05/05/2025','15','$892500','En proceso']] },
+  clientes: { headers:['Empresa','RUT','Contacto','Email','Categoría','Pedidos','Estado'], rows:[['Empresa ABC S.A.','20-12345678-9','Juan Pérez','jp@abc.com','Mayorista A','37','Activo'],['TechMart S.A.','20-77889900-3','Lucía Torres','lt@tm.com','Mayorista A','51','Activo']] },
+  productos:{ headers:['Código','Nombre','Categoría','Precio','Stock','Stock Mínimo'], rows:products.map(p=>[p.code,p.name,p.cat,p.price,p.stock,p.min]) },
+  stock:    { headers:['Código','Nombre','Stock actual','Mínimo','Estado'], rows:products.filter(p=>p.stock<=p.min).map(p=>[p.code,p.name,p.stock,p.min,p.stock===0?'Sin stock':'Stock bajo']) },
+  altas:    { headers:['Empresa','RUT','Contacto','Email','Fecha','Estado'], rows:[['Distribuidora Norte','20-87654321-0','Carlos Méndez','cm@dn.com','06/05/2025','Pendiente'],['MegaStore LTDA','20-99887766-2','Pedro Sánchez','ps@ms.com','04/05/2025','En revisión']] },
+  custom:   { headers:['Fecha','Empresa','Total','Estado'], rows:[['06/05/2025','Empresa ABC','$345000','Pendiente']] }
+};
+
+function exportExcel(type) {
+  const d = excelData[type] || excelData.ventas;
+  let csv = d.headers.join(';') + '\n';
+  d.rows.forEach(r => csv += r.join(';') + '\n');
+  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = type+'_mayorista.csv';
+  a.click(); URL.revokeObjectURL(url);
+  showToast(`📥 Exportando ${type}.xlsx...`, 't-success');
+}
+
+// ================================================================
+// HELPERS
+// ================================================================
+function filterTable(input, tableId) {
+  const q = input.value.toLowerCase();
+  document.querySelectorAll('#'+tableId+' tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function aprobarAlta(btn, nombre) {
+  btn.closest('tr').remove();
+  const badge = document.getElementById('badgeAltas');
+  const n = parseInt(badge.textContent) - 1;
+  badge.textContent = n; if (!n) badge.style.display='none';
+  showToast(`✓ ${nombre} aprobada y activada`, 't-success');
+}
+function rechazarAlta(btn) {
+  btn.closest('tr').remove();
+  const badge = document.getElementById('badgeAltas');
+  const n = parseInt(badge.textContent) - 1;
+  badge.textContent = n; if (!n) badge.style.display='none';
+  showToast('Solicitud rechazada', 't-error');
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+let toastCount = 0;
+function showToast(msg, type='t-info') {
+  const stack = document.getElementById('toastStack');
+  const id = 'toast-' + (++toastCount);
+  const el = document.createElement('div');
+  el.className = 'toastx ' + type; el.id = id;
+  el.textContent = msg;
+  stack.appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+// ================================================================
+// INIT
+// ================================================================
+function initApp(user) {
+  buildProdTable();
+  buildChart('salesChart','salesLabels',
+    [380,420,510,490,560,610,580,690],
+    ['S1','S2','S3','S4','S5','S6','S7','S8']);
+  buildChart('reportChart','reportLabels',
+    [2.8,3.1,3.4,3.9,4.2,0,0,0,0,0,0,0].slice(0,5),
+    ['Ene','Feb','Mar','Abr','May']);
+  // Date
+  const now = new Date();
+  document.getElementById('topbarDate').textContent =
+    now.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  setTimeout(() => showToast(`Bienvenido, ${user} 👋`, 't-success'), 500);
+}
+</script>
+</body>
+</html>
