@@ -1481,7 +1481,22 @@ renderFlashList();
     </div>
   </div>
 </div>
-
+  
+/ ============================================================
+// ADMIN EMBED
+// ============================================================
+let adminLoaded = false;
+function loadAdminEmbed() {
+  if (adminLoaded) return;
+  adminLoaded = true;
+  const embed = document.getElementById('admin-embed');
+  const iframe = document.createElement('iframe');
+  iframe.src = 'admin_mayorista.html';
+  iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+  iframe.title = 'Panel de Administración';
+  embed.appendChild(iframe);
+}
+ 
 <!-- Cart Overlay -->
 <div id="cart-overlay" onclick="closeCart()"></div>
 
