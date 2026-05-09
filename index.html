@@ -1215,22 +1215,7 @@ function refreshLockedState(sectionId) {
 // ============================================================
 // PRODUCTOS
 // ============================================================
-const products = [
-  {code:'ELEC-001', name:'Smart TV 55"', cat:'Flash', price:189999, stock:'in', img:'📺'},
-  {code:'ELEC-002', name:'Auriculares BT Pro', cat:'Flash', price:24990, stock:'in', img:'🎧'},
-  {code:'ELEC-003', name:'Tablet 10" HD', cat:'Electrónica', price:67500, stock:'low', img:'📱'},
-  {code:'ELEC-004', name:'Notebook 15" i5', cat:'Electrónica', price:345000, stock:'in', img:'💻'},
-  {code:'HOG-001', name:'Cafetera Express', cat:'Flash', price:32000, stock:'in', img:'☕'},
-  {code:'HOG-002', name:'Licuadora 700W', cat:'Hogar', price:18500, stock:'in', img:'🍹'},
-  {code:'HOG-003', name:'Set Sartenes 3pz', cat:'Flash', price:15200, stock:'low', img:'🍳'},
-  {code:'HOG-004', name:'Aspiradora Robot', cat:'Hogar', price:89000, stock:'no', img:'🤖'},
-  {code:'ROP-001', name:'Campera Invierno', cat:'Ropa', price:12800, stock:'in', img:'🧥'},
-  {code:'ROP-002', name:'Zapatillas Running', cat:'Flash', price:22400, stock:'in', img:'👟'},
-  {code:'ROP-003', name:'Remeras x6 unid.', cat:'Ropa', price:8900, stock:'in', img:'👕'},
-  {code:'DEP-001', name:'Pelota Fútbol #5', cat:'Flash', price:5600, stock:'in', img:'⚽'},
-  {code:'DEP-002', name:'Bicicleta MTB 29"', cat:'Deportes', price:225000, stock:'low', img:'🚲'},
-  {code:'DEP-003', name:'Set Pesas 20kg', cat:'Deportes', price:38000, stock:'in', img:'🏋️'},
-];
+const products = [];
  
 function renderFlashList() {
   const tbody = document.getElementById('flashListBody');
@@ -1385,6 +1370,14 @@ function submitAlta() {
   if (!email.includes('@')) {
     showToast('Ingresá un email válido', 'error'); return;
   }
+  // Guardar solicitud en localStorage
+  const altas = JSON.parse(localStorage.getItem('doki_altas') || '[]');
+  altas.push({
+    empresa, dni, contacto, email,
+    fecha: new Date().toLocaleDateString('es-AR'),
+    estado: 'Pendiente'
+  });
+  localStorage.setItem('doki_altas', JSON.stringify(altas));
   document.getElementById('altaForm').style.display = 'none';
   document.getElementById('altaSuccess').style.display = 'block';
   showToast('✓ Solicitud enviada exitosamente', 'success');
@@ -1485,6 +1478,47 @@ function loadAdminEmbed() {
   embed.appendChild(iframe);
 }
  
+// ============================================================
+// SINCRONIZACIÓN CON ADMIN (localStorage)
+// ============================================================
+var EVENTOS_CIERRE_DATA = typeof EVENTOS_CIERRE !== 'undefined' ? EVENTOS_CIERRE : [];
+ 
+function syncToStorage() {
+  localStorage.setItem('doki_products', JSON.stringify(products));
+  // Fechas se sincronizan al cargar
+}
+ 
+function confirmarPedido() {
+  if (cart.length === 0) return;
+  const pedidos = JSON.parse(localStorage.getItem('doki_pedidos') || '[]');
+  const total = cart.reduce((s, i) => s + i.qty * i.price, 0);
+  pedidos.push({
+    id: '#PED-' + Date.now().toString().slice(-5),
+    empresa: isLoggedIn && document.getElementById('modalUserName') ? document.getElementById('modalUserName').textContent : 'Cliente',
+    fecha: new Date().toLocaleDateString('es-AR'),
+    items: cart.map(i => ({...i})),
+    total,
+    estado: 'Pendiente'
+  });
+  localStorage.setItem('doki_pedidos', JSON.stringify(pedidos));
+  cart = [];
+  renderCart();
+  updateCartBadge();
+  closeCart();
+  showToast('✓ Pedido confirmado', 'success');
+}
+ 
+// Guardar productos y fechas al cargar
+syncToStorage();
+localStorage.setItem('doki_fechas', JSON.stringify(EVENTOS_CIERRE));
+ 
+// Logout desde el iframe admin
+function doLogoutFromAdmin() {
+  setLoggedIn(false, null);
+  showSection('inicio');
+  showToast('Sesión cerrada', '');
+}
+ 
 // Inicializar lista Flash
 renderFlashList();
 </script>
@@ -1548,7 +1582,7 @@ renderFlashList();
   </div>
   <div id="cart-body"></div>
   <div id="cart-footer" style="display:none">
-    <button class="btn-primary btn-accent" style="width:100%;padding:.85rem;" onclick="showToast('✓ Pedido confirmado', \'success\'); cart=[]; renderCart(); updateCartBadge(); closeCart();">Confirmar pedido ⚡</button>
+    <button class="btn-primary btn-accent" style="width:100%;padding:.85rem;" onclick="confirmarPedido();">Confirmar pedido ⚡</button>
   </div>
 </div>
  
