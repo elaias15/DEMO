@@ -1039,7 +1039,8 @@ function showToast(msg, type) {
 // ============================================================
 const DEMO_USERS = [
   { email: 'demo@empresa.com', password: 'demo1234', name: 'Empresa Demo S.A.', company: 'Empresa Demo S.A.', role: 'cliente' },
-  { email: 'admin@dokidoki.com', password: 'admin123', name: 'Administrador', company: 'Doki Doki', role: 'admin' }
+  { email: 'admin@dokidoki.com', password: 'admin123', name: 'Administrador', company: 'Doki Doki', role: 'admin' },
+  { email: 'admin', password: 'admin123', name: 'Administrador', company: 'Doki Doki', role: 'admin' }
 ];
  
 // ============================================================
@@ -1077,9 +1078,9 @@ function handleModalOverlayClick(e) {
 }
  
 function doLogin() {
-  const email = document.getElementById('modalEmail').value.trim().toLowerCase();
+  const input = document.getElementById('modalEmail').value.trim().toLowerCase();
   const pass  = document.getElementById('modalPassword').value;
-  const user  = DEMO_USERS.find(u => u.email === email && u.password === pass);
+  const user  = DEMO_USERS.find(u => u.email.toLowerCase() === input && u.password === pass);
   if (!user) {
     document.getElementById('modalError').classList.add('visible');
     return;
@@ -1486,7 +1487,10 @@ function loadAdminEmbed() {
  
 // Inicializar lista Flash
 renderFlashList();
-</script><div class="modal-overlay" id="loginModal" onclick="handleModalOverlayClick(event)">
+</script>
+ 
+<!-- Login Modal -->
+<div class="modal-overlay" id="loginModal" onclick="handleModalOverlayClick(event)">
   <div class="modal-box" id="modalBox">
     <button class="modal-close" onclick="closeLoginModal()">✕</button>
  
@@ -1504,8 +1508,8 @@ renderFlashList();
       </div>
       <div class="modal-error" id="modalError">Email o contraseña incorrectos.</div>
       <div class="modal-input-group">
-        <label>Email</label>
-        <input type="email" id="modalEmail" placeholder="contacto@empresa.com" />
+        <label>Email o usuario</label>
+        <input type="text" id="modalEmail" placeholder="contacto@empresa.com" autocomplete="username" />
       </div>
       <div class="modal-input-group">
         <label>Contraseña</label>
@@ -1550,4 +1554,3 @@ renderFlashList();
  
 </body>
 </html>
- 
